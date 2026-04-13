@@ -1,79 +1,96 @@
-	package main
+package main
 
-	import "fmt"
-	func continuar() bool{
-		var respuesta string
-		fmt.Print("¿Deseas realizar otra operación? (s/n): ")
-		fmt.Scan(&respuesta)
-		if respuesta == "s" || respuesta == "S" {
-			return true // Llamar a la función main para reiniciar la calculadora
-		}
-		return false // Salir del programa
-	}
+import "fmt"
 
-	func main() {
-		var a, b float64
-		var operacion string
+func main() {
+	var a, b float64
+	var operacion string
 
-		fmt.Println("==== CALCULADORA CIENTÍFICA v1.0 ====")
+	historial := ""
+	contador := 0
 
-		fmt.Print("Ingresa la operación (+, -, *, /, ^, !): ")
+	fmt.Println("==== CALCULADORA CIENTÍFICA v1.0 ====")
+
+	for {
+		fmt.Print("\nIngresa la operación (+, -, *, /, ^, !): ")
 		fmt.Scan(&operacion)
 
 		switch operacion {
 
 		case "+", "-", "*", "/", "^":
-			// Operaciones que necesitan 2 números
 			fmt.Print("Ingresa el primer número: ")
 			fmt.Scan(&a)
 
 			fmt.Print("Ingresa el segundo número: ")
 			fmt.Scan(&b)
 
+			var resultado float64
+
 			switch operacion {
 			case "+":
-				fmt.Printf("Resultado: %.2f\n", a+b)
+				resultado = a + b
 			case "-":
-				fmt.Printf("Resultado: %.2f\n", a-b)
+				resultado = a - b
 			case "*":
-				fmt.Printf("Resultado: %.2f\n", a*b)
+				resultado = a * b
 			case "/":
 				if b == 0 {
 					fmt.Println("Error: no se puede dividir entre cero")
-				} else {
-					fmt.Printf("Resultado: %.2f\n", a/b)
+					continue
 				}
+				resultado = a / b
 			case "^":
-				resultado := 1.0
+				resultado = 1
 				for i := 0; i < int(b); i++ {
 					resultado *= a
 				}
-				fmt.Printf("Resultado: %.2f\n", resultado)
 			}
 
+			fmt.Printf("Resultado: %.2f %s %.2f = %.2f\n", a, operacion, b, resultado)
+
+			contador++
+			historial += fmt.Sprintf("%d) %.2f %s %.2f = %.2f\n", contador, a, operacion, b, resultado)
+
 		case "!":
-			// Solo necesita 1 número
 			fmt.Print("Ingresa el número: ")
 			fmt.Scan(&a)
 
 			n := int(a)
+
 			if n < 0 {
 				fmt.Println("Error: no existe factorial de negativos")
-			} else if n == 0 {
-				fmt.Println("Resultado: 1")
-			} else {
-				resultado := 1
-				for i := 1; i <= n; i++ {
-					resultado *= i
-				}
-				fmt.Println("Resultado:", resultado)
+				continue
 			}
+
+			resultado := 1
+			for i := 1; i <= n; i++ {
+				resultado *= i
+			}
+
+			fmt.Printf("Resultado: %d! = %d\n", n, resultado)
+
+			contador++
+			historial += fmt.Sprintf("%d) %d! = %d\n", contador, n, resultado)
 
 		default:
 			fmt.Println("Error: operación no reconocida")
+			continue
 		}
-		if !continuar() {
-			fmt.Println("¡Gracias por usar la calculadora! Hasta luego.")
-			return
+
+		// Preguntar si continúa
+		var respuesta string
+		fmt.Print("¿Otra operación? (s/n): ")
+		fmt.Scan(&respuesta)
+
+		if respuesta != "s" && respuesta != "S" {
+			break
 		}
 	}
+
+	// Mostrar historial al final
+	fmt.Println("\n==== HISTORIAL DE OPERACIONES ====")
+	fmt.Print(historial)
+	fmt.Printf("Total de operaciones realizadas: %d\n", contador)
+
+	fmt.Println("¡Hasta luego!")
+}
